@@ -9,11 +9,13 @@ class LMFunction(object):
         self.engine = engine
         self.max_tokens = max_tokens
         self.openai = openai
+        # print("API Key e: ", os.environ['OPENAI_API_KEY'])
         openai.api_key = os.environ['OPENAI_API_KEY']
 
     def _call_api(self, prompt, engine, max_tokens, max_retries=10, retry_wait=2):
         for i in range(max_retries):
             try:
+                print("inside call api")
                 return self.openai.ChatCompletion.create(
                     model=engine,
                     messages=[
@@ -41,20 +43,12 @@ class LMFunction(object):
             max_tokens=self.max_tokens
         )
         evaluation = self._parse_message(msg)
+        if evaluation == '':
+            print('API call failed')
         return evaluation
 
 
 class Checker(object):
-    """A modified version of the Draft, Sketch, Prove proof-checking client.
-    (https://github.com/albertqjiang/draft_sketch_prove/blob/main/autoformalization/checker.py)
-
-    This checker supports Isabelle2022 via the new version of PISA
-    (https://albertqjiang.github.io/Portal-to-ISAbelle/).
-
-    It supports checking a miniF2F-style proof via `check`.
-
-    Finally, it replaces `sledgehammer` with a call to `normalhammer`.
-    """
     def __init__(self, working_dir, isa_path, theory_file, port=9000):
         sys.path.append(os.environ['PISA_PATH'])
         print(sys.path)
@@ -121,12 +115,24 @@ class Checker(object):
 
     def check(self, statement_and_proof):
         # Initialize environment
+        print("in check")
         env = self._initialize()
         env.initialise()
 
         # Wrap and parse theorem
         theory = Checker.wrap_theorem(statement_and_proof)
         steps = Checker.get_parsed(env, theory)
+
+
+        # steps = env.post(f"<parse text> ${theory}")
+        # steps = steps.split('<SEP>')
+        # steps = [s for s in steps if s.strip() != '']
+        # # remove weird '$' step and whitespace steps
+        # steps = [s for s in steps if s != '$' and s.strip() != '']
+
+        print("theory: ", theory)
+        print("-----------------")
+        print("steps: ", steps)
 
         result = self._check(env, steps)
         return result
@@ -144,6 +150,7 @@ class Checker(object):
                     obs, reward, done, metadata, error = self._run_sledgehammer(step, i, tls_name, env)
                 else:
                     obs, reward, done, metadata, error = self._run_step(step, i, tls_name, env)
+                # obs, reward, done, metadata, error = self._run_step(step, i, tls_name, env)
                 step_time = time.time() - time0
                 step_results.append(dict(index=i, step=step, output=self._parse_output(obs), step_time=step_time))
                 if error is not None:
@@ -196,6 +203,7 @@ class Checker(object):
     def get_parsed(env, theory, tls_name='default'):
         # HACK: the parsing doesn't work well with `normalhammer`, so we replace
         # all hammer calls with sorry, then replace sorry to normalhammer after parsing.
+        print("in get_parsed")
         theory = theory.replace('sledgehammer', 'sorry')
         theory = theory.replace('normalhammer', 'sorry')
 
