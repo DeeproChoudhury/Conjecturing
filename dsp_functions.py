@@ -12,11 +12,12 @@ class LMFunction(object):
         # print("API Key e: ", os.environ['OPENAI_API_KEY'])
         openai.api_key = os.environ['OPENAI_API_KEY']
 
+    # client = OpenAI()
     def _call_api(self, prompt, engine, max_tokens, max_retries=10, retry_wait=2):
         for i in range(max_retries):
             try:
                 print("inside call api")
-                return self.openai.ChatCompletion.create(
+                return self.openai.chat.completions.create(
                     model=engine,
                     messages=[
                         {"role": "system", "content": "You are a helpful assistant."},
@@ -25,7 +26,8 @@ class LMFunction(object):
                     max_tokens=max_tokens,
                     temperature=1.0
                 )
-            except self.openai.error.OpenAIError as e:
+            except self.openai.OpenAIError as e:
+                print('API call failed: %s' % e)
                 time.sleep(retry_wait)
         return {'choices': [{'message': {'content': ''}}]}
 

@@ -36,7 +36,7 @@ print(prompt)
 
 
 if __name__ == '__main__':
-    p = dsp_functions.LMFunction('gpt-3.5-turbo', 8192)
+    p = dsp_functions.LMFunction('gpt-3.5-turbo', 512)
     xi = 'Show that if x is even, then x+5 is odd'
     yi = p.f(prompt, xi)
     print(yi)
