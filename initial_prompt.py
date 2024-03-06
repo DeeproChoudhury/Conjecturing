@@ -3,26 +3,40 @@ from mistralai.models.chat_completion import ChatMessage
 import os
 import sys
 
-sys.path.append(os.getcwd())
+sys.path.append("/home/dc755/Conjecturing/")
+sys.path.append("/home/dc755/Conjecturing/conjecture-generation/")
+sys.path.append("/home/dc755/Conjecturing/conjecture-generation/src/")
+WORK_DIR = os.getcwd()
+print(sys.path)
 from utils.create import load_template
+from utils.json_utils import write_to_new_json, load_json_as_list
+from conjecture_generation.src.domain import Domain
+from conjecture_generation.src.func_parameterization import FunctionParameterization
+from conjecture_generation.src.functions import exponential_box
+from conjecture_generation.src.conj_gen import find_new_conj, sgd_signum_loss, save_conj
+from initial_functions import poly_box
 
 prompt = """Translate the informal solution into a sketch of the
 formal Isabelle proof. Add `sledgehammer` in the sketch whenever
 possible. `sledgehammer` will be used to call the automated Sledgehammer prover. 
-Some conjectures will be specified in the prompt. Translate them into their formal Isabelle form
+Some conjectures with underscores in the variable names will be specified in the prompt, in the form of a python dictionary
+with the first key being 'initial_conjecture' and the final key (if applicable) being
+'final_conjecture'.
+Translate them into their formal Isabelle form
 as lemmas, but do not prove them. When calling sledgehammer, use the lemmas as assumptions.
 Here are some examples:
 
-(* Problem\n\n
+(* Problem:\n\n
 Find the minimum value of $\\frac{9x^2\\sin^2 x + 4}{x\\sin x}$ for $0 < x < \\pi$. 
 Show that it is 12.
 
-Solution\n\n
+Solution:\n\n
 Let $y = x \\sin x$. It suffices to show that $12 \\leq \\frac{9y^2 + 4}{y}.\n
 It is trivial to see that $y > 0$. \nThen one can multiply both sides by $y$ and 
 it suffices to show $12y \\leq 9y^2 + 4$.\nThis can be done by the sum of squares method. 
 
-Conjectures: {(9 * y^2 + 4) / y >= 12, y * sin y > 0}
+Conjectures: 
+{'initial_conjecture' : '(9 * y_1^2 + 4) / y_1 >= 12', 'final_conjecture': y_1 * sin y_1 > 0}
 *)
 
  
@@ -59,20 +73,20 @@ proof -
     sledgehammer
 qed
 
-(* Problem
+(* Problem:
 
 Show that for any complex number a, $(a-10)(a+11) = a^2 + a - 110$.
 
 
- Solution
+Solution:
 
 We first expand all terms of the left hand side to get $a^2 - 10a + 11a - 10*11$.
 This equals $a^2 + a - 10*11 = a^2 + a - 110$.
 
-Conjectures
+Conjectures:
 
-{(a - 10) * (a + 11) = a^2 - 10*a + 11*a - 110,
-a^2 - 10*a + 11*a - 110 = a^2 + a - 110}
+{'initial_conjecture' : '(a_1 - 10) * (a_1 + 11) = a_1^2 - 10*a_1 + 11*a_1 - 110',
+'final_conjecture' : 'a_1^2 - 10*a_1 + 11*a_1 - 110 = a_1^2 + a_1 - 110'}
 *)
 
 lemma expansion_of_product:
@@ -102,11 +116,11 @@ proof -
     sledgehammer
 qed
 
-(* Problem
+(* Problem:
 
 For a positive real number x, show that $2 - \sqrt{2} \geq 2 - x - \frac{1}{2x}$.
 
-Solution
+Solution:
 
 First notice that $2x$ is positive.
 It suffices to show $\sqrt{2} \leq x + \frac{1}{2x}$.
@@ -116,8 +130,8 @@ Also notice that $2x*x + 1 - 2x * \sqrt{2} = 2x * (x + \frac{1}{2x} - \sqrt{2})$
 Therefore $x + \frac{1}{2x} - \sqrt{2} \geq 0$, given $2x > 0$.
 Rearranging terms, we see that the required inequality holds.
 
-Conjectures
-{(2 * x) > 0}
+Conjectures:
+{'initial_conjecture' : '(2 * x_1) > 0'}
 *)
 
 lemma c0: 
@@ -166,8 +180,16 @@ proof -
 qed
 
 (*
+Problem:
+
 {{problem}}
+
+Solution:
+
 {{solution}}
+
+Conjectures:
+
 {{conjectures}}
 *)
 """
@@ -182,7 +204,14 @@ problem="Let x be a real number. Show that x^2 + 2x + 1 > 0."
 solution="The expression can be factored as (x + 1)^2. The square of a real number is always non-negative, so (x + 1)^2 > 0."
 conjectures="{x^2 > 0}"
 
-def prompt_lemmas(problem: str, solution: str, conjectures: str) -> str:
+def prompt_lemmas(problem: str, solution: str, conjectures: str, functions=None) -> str:
+    if functions is not None:
+        conjectures = conjectures + functions
+
+    print("conjectures: ", conjectures)
+
+    with open("prompt_example", "w") as file:
+        file.write(load_template(prompt).render(problem=problem, solution=solution, conjectures=conjectures))
     completion = client.chat(
         model=model,
         messages=[
@@ -197,5 +226,88 @@ def prompt_lemmas(problem: str, solution: str, conjectures: str) -> str:
     )
     return completion.choices[0].message.content
 
+# local_function_box = [x, x^2]
+
+def local_save_conj(initial_conj: str, final_conj: str = None):
+    if final_conj is not None:
+        data_dictionary = {
+            "initial_conjecture": initial_conj + " > 0",
+            "final_conjecture": final_conj.replace("**", "^") + " > 0",
+        }
+    else:
+        data_dictionary = {"conjecture": initial_conj + " > 0"}
+
+    return write_to_new_json(data_dictionary, directory=WORK_DIR, filename_prefix="conjectures")
+
+domain = Domain(
+    func_box=poly_box,
+    max_degree=1,
+    latent_dim=1,
+    evaluation_dimension=10,
+    testset_size=100,
+)
 if __name__=="__main__":
+    
+    file_saved = ""
+    [x_var, combs, eval_point] = domain.generate_evaluation_domain_discrete(
+        pnt_start=1, pnt_end=10**2
+    )
+
+    [y_symbs, num_pars, func_evals, eval_data] = domain.generate_hypothesis_space(
+        vars=x_var, cmbs=combs, eval_points=eval_point
+    )
+
+    func_param = FunctionParameterization(num_pars=num_pars, y_symbs=y_symbs)
+    print(f"Initial θ vector is: {func_param.θ}")
+
+    no_of_tries = 100
+    counter = 100
+    while counter > 0:
+        [initial_conj, initial_loss, flag, sig_val] = find_new_conj(
+            num_pars=num_pars,
+            eval_data=eval_data,
+            y_symbs=y_symbs,
+            func_evals=func_evals,
+        )
+        print(
+            f"initial conj number: {no_of_tries - counter} is: {initial_conj}..associated loss is: {initial_loss}"
+        )
+        initial_conj = str(initial_conj)
+        if not flag:
+            file_saved = local_save_conj(initial_conj=initial_conj)
+            print("this is the file saved", file_saved)
+            counter -= 1
+        else:
+            break
+
+    if flag:
+        print("Actual learning needed")
+        [final_conj, final_loss] = sgd_signum_loss(
+            y_symbs=y_symbs,
+            training_data=eval_data,
+            func_param=func_param,
+            sig_val=sig_val,
+            batch_prct=0.1,
+            num_epochs=100,
+            θ_differential=100,
+            learn_rate=15.7,
+            initial_loss=initial_loss,
+            loss_type="signum",
+            comp_number=1,
+            num_pars=num_pars,
+        )
+
+        sub_list = zip(y_symbs, func_evals)
+        final_conj = final_conj.subs(sub_list)
+        final_conj = str(final_conj)
+        print(f"The final conjecture is: {final_conj} > 0")
+
+        file_saved = local_save_conj(initial_conj=initial_conj, final_conj=final_conj)
+
+        print(f"Found {101 - counter} conjectures in total!")
+
+    else:
+        print("Couldn't find conjecture needing training but saved 100 conjectures!")
+
+    conjectures = load_json_as_list(file_saved)
     print(prompt_lemmas(problem, solution, conjectures))
