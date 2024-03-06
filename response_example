@@ -1,0 +1,30 @@
+lemma non_negative_square:
+  fixes x :: real
+  shows "(x + 1)^2 >= 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma positive_square:
+  fixes x :: real
+  assumes "x != -1"
+  shows "(x + 1)^2 > 0"
+proof -
+  show ?thesis
+  using non_negative_square assms
+  \<proof>
+qed
+
+theorem positive_expression:
+  fixes x :: real
+  shows "x^2 + 2*x + 1 > 0"
+proof -
+  have "x^2 + 2*x + 1 = (x + 1)^2"
+    sledgehammer
+  moreover have "(x + 1)^2 > 0"
+    using positive_square
+    sledgehammer
+  ultimately show ?thesis
+    sledgehammer
+qed

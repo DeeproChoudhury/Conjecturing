@@ -4,8 +4,8 @@ import os
 import sys
 
 sys.path.append("/home/dc755/Conjecturing/")
-sys.path.append("/home/dc755/Conjecturing/conjecture-generation/")
-sys.path.append("/home/dc755/Conjecturing/conjecture-generation/src/")
+sys.path.append("/home/dc755/Conjecturing/conjecture_generation/")
+sys.path.append("/home/dc755/Conjecturing/conjecture_generation/src/")
 WORK_DIR = os.getcwd()
 print(sys.path)
 from utils.create import load_template
@@ -19,9 +19,8 @@ from initial_functions import poly_box
 prompt = """Translate the informal solution into a sketch of the
 formal Isabelle proof. Add `sledgehammer` in the sketch whenever
 possible. `sledgehammer` will be used to call the automated Sledgehammer prover. 
-Some conjectures with underscores in the variable names will be specified in the prompt, in the form of a python dictionary
-with the first key being 'initial_conjecture' and the final key (if applicable) being
-'final_conjecture'.
+Some conjectures with underscores in the variable names will be specified in the prompt, in the form of python dictionaries
+with keys labelled either 'initial conjecture', 'conjecture' or 'final conjecture'.
 Translate them into their formal Isabelle form
 as lemmas, but do not prove them. When calling sledgehammer, use the lemmas as assumptions.
 Here are some examples:
@@ -194,6 +193,9 @@ Conjectures:
 *)
 """
 
+with open('labelled_prompt.txt', 'r') as file:
+    prompt = file.read()
+
 api_key = os.environ['MISTRAL_API_KEY']
 model = "mistral-large-latest"
 
@@ -224,6 +226,8 @@ def prompt_lemmas(problem: str, solution: str, conjectures: str, functions=None)
             ),
         ]
     )
+    with open("response_example_2", "w") as file:
+        file.write(completion.choices[0].message.content)
     return completion.choices[0].message.content
 
 # local_function_box = [x, x^2]
@@ -248,7 +252,7 @@ domain = Domain(
 )
 if __name__=="__main__":
     
-    file_saved = ""
+    file_saved = []
     [x_var, combs, eval_point] = domain.generate_evaluation_domain_discrete(
         pnt_start=1, pnt_end=10**2
     )
@@ -274,7 +278,7 @@ if __name__=="__main__":
         )
         initial_conj = str(initial_conj)
         if not flag:
-            file_saved = local_save_conj(initial_conj=initial_conj)
+            file_saved.append(local_save_conj(initial_conj=initial_conj))
             print("this is the file saved", file_saved)
             counter -= 1
         else:
@@ -302,12 +306,15 @@ if __name__=="__main__":
         final_conj = str(final_conj)
         print(f"The final conjecture is: {final_conj} > 0")
 
-        file_saved = local_save_conj(initial_conj=initial_conj, final_conj=final_conj)
+        file_saved.append(local_save_conj(initial_conj=initial_conj, final_conj=final_conj))
 
         print(f"Found {101 - counter} conjectures in total!")
 
     else:
         print("Couldn't find conjecture needing training but saved 100 conjectures!")
 
-    conjectures = load_json_as_list(file_saved)
-    print(prompt_lemmas(problem, solution, conjectures))
+    # conjectures = load_json_as_list(file_saved)
+    conjectures = []
+    for file in file_saved:
+        conjectures.append(load_json_as_list(file))
+    print(prompt_lemmas(problem, solution, conjectures[3]))

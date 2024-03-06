@@ -1,0 +1,65 @@
+lemma square_nonnegative:
+  fixes x::real
+  shows "(x + 1)^2 >= 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma x_squared_plus_twox_plus_one_positive:
+  fixes x::real
+  shows "x^2 + 2*x + 1 > 0"
+proof -
+  have "(x + 1)^2 > 0"
+    using square_nonnegative
+    sledgehammer
+  then show ?thesis
+    sledgehammer
+qed
+
+(* Problem:
+
+Let x be a real number. Show that if x > 2 then x^2 > 4.
+
+Solution:
+
+Since x > 2, we can multiply both sides by x (which is positive since x > 2) to get x^2 > 2x. Since 2x > 4 (because x > 2), we have x^2 > 4.
+
+Conjectures:
+{'initial_conjecture': 'x_1 > 2', 'final_conjecture': 'x_1^2 > 4'}
+*)
+
+Formal Sketch:
+
+lemma x_greater_than_two:
+  fixes x::real
+  assumes "x > 2"
+  shows "x * x > 2 * x"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma two_x_greater_than_four:
+  fixes x::real
+  assumes "x > 2"
+  shows "2 * x > 4"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+theorem x_squared_greater_than_four:
+  fixes x::real
+  assumes "x > 2"
+  shows "x^2 > 4"
+proof -
+  have "x * x > 2 * x"
+    using x_greater_than_two assms
+    sledgehammer
+  also have "2 * x > 4"
+    using two_x_greater_than_four assms
+    sledgehammer
+  finally show ?thesis
+    sledgehammer
+qed
