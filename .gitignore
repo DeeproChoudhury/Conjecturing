@@ -162,6 +162,7 @@ cython_debug/
 .vscode/
 
 old_conjectures/
+old_conjectures_2/
 conjecture_generation/wandb/
 wandb/
 conjectures_*

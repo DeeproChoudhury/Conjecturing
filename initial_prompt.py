@@ -15,6 +15,7 @@ from conjecture_generation.src.func_parameterization import FunctionParameteriza
 from conjecture_generation.src.functions import exponential_box
 from conjecture_generation.src.conj_gen import find_new_conj, sgd_signum_loss, save_conj
 from initial_functions import poly_box
+import dsp_functions
 
 prompt = """Translate the informal solution into a sketch of the
 formal Isabelle proof. Add `sledgehammer` in the sketch whenever
@@ -202,8 +203,8 @@ model = "mistral-large-latest"
 
 client = MistralClient(api_key=api_key)
 
-problem="Let x be a real number. Show that x^2 + 2x + 1 > 0."
-solution="The expression can be factored as (x + 1)^2. The square of a real number is always non-negative, so (x + 1)^2 > 0."
+problem="Let $x$ be a real number. Show that $x^2 + 2x + 1 \geq 0$."
+solution="The expression can be factored as $(x + 1)^2$. The square of a real number is always non-negative, so $(x + 1)^2 \geq 0$."
 conjectures="{x^2 > 0}"
 
 def prompt_lemmas(problem: str, solution: str, conjectures: str, functions=None) -> str:
@@ -226,7 +227,7 @@ def prompt_lemmas(problem: str, solution: str, conjectures: str, functions=None)
             ),
         ]
     )
-    with open("response_example_2", "w") as file:
+    with open("response_example_2.txt", "w") as file:
         file.write(completion.choices[0].message.content)
     return completion.choices[0].message.content
 
@@ -317,4 +318,21 @@ if __name__=="__main__":
     conjectures = []
     for file in file_saved:
         conjectures.append(load_json_as_list(file))
-    print(prompt_lemmas(problem, solution, conjectures[3]))
+    print(prompt_lemmas(problem, solution, conjectures))
+
+    os.environ['PISA_PATH'] = '/home/dc755/Portal-to-ISAbelle/src/main/python'
+
+    checker = dsp_functions.Checker(
+        working_dir='/home/dc755/Isabelle2022/src/HOL/Examples',
+        isa_path='/home/dc755/Isabelle2022',
+        theory_file='/home/dc755/Isabelle2022/src/HOL/Examples/Interactive.thy',
+        port=8000
+    )
+
+    with open('response_example_2.txt', 'r') as file:
+        response = file.read()
+
+    result = checker.check(response)
+
+    print("\n==== Success: %s" % result['success'])
+    print("--- Complete proof:\n%s" % result['theorem_and_proof'])
