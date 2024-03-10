@@ -107,7 +107,9 @@ class Checker(object):
         # First try heuristics
         for heuristic in ['by auto', 'by simp', 'by blast', 'by fastforce', 'by force', 'by eval', 'by presburger', 'by sos', 'by arith', 'by linarith', 'by (auto simp: field_simps)']:
             step_ = step.replace('normalhammer', heuristic)
+            print("heuristic: ", heuristic)
             obs, reward, done, metadata, error = self._run_step(step_, i, tls_name, env)
+            print("error: ", error)
             if error is None:
                 obs = '%s <hammer> %s' % (heuristic, obs)
                 return obs, reward, done, metadata, error

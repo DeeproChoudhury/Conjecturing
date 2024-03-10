@@ -207,6 +207,9 @@ problem="Let $x$ be a real number. Show that $x^2 + 2x + 1 \geq 0$."
 solution="The expression can be factored as $(x + 1)^2$. The square of a real number is always non-negative, so $(x + 1)^2 \geq 0$."
 conjectures="{x^2 > 0}"
 
+# problem="Let $x$ be a real number. Prove that $1 \leq \frac{1}{2}(\sin x + 3) \leq 2$."
+# solution="We know by definition that $-1 \leq \sin x \leq 1$, so we start with that and do some rearranging. Adding 3 gives us $2 \leq \sin x + 3 \leq 4$. Dividing by 2 gives us $1 \leq \frac{1}{2}(\sin x + 3) \leq 2."
+
 def prompt_lemmas(problem: str, solution: str, conjectures: str, functions=None) -> str:
     if functions is not None:
         conjectures = conjectures + functions
@@ -233,11 +236,11 @@ def prompt_lemmas(problem: str, solution: str, conjectures: str, functions=None)
 
 # local_function_box = [x, x^2]
 
-def local_save_conj(initial_conj: str, final_conj: str = None):
+def local_save_conj(initial_conj: str, final_conj: str = None, sig_val=0):
     if final_conj is not None:
         data_dictionary = {
-            "initial_conjecture": initial_conj + " > 0",
-            "final_conjecture": final_conj.replace("**", "^") + " > 0",
+            # "initial_conjecture": initial_conj + " > 0",
+            "final_conjecture": final_conj.replace("**", "^") + " > 0" if sig_val >= 0 else final_conj.replace("**", "^") + " < 0",
         }
     else:
         data_dictionary = {"conjecture": initial_conj + " > 0"}
@@ -255,7 +258,7 @@ if __name__=="__main__":
     
     file_saved = []
     [x_var, combs, eval_point] = domain.generate_evaluation_domain_discrete(
-        pnt_start=1, pnt_end=10**2
+        pnt_start=-50, pnt_end=50
     )
 
     [y_symbs, num_pars, func_evals, eval_data] = domain.generate_hypothesis_space(
@@ -305,9 +308,13 @@ if __name__=="__main__":
         sub_list = zip(y_symbs, func_evals)
         final_conj = final_conj.subs(sub_list)
         final_conj = str(final_conj)
-        print(f"The final conjecture is: {final_conj} > 0")
+        if sig_val > 0:
+          print(f"The final conjecture is: {final_conj} > 0")
+        else:
+          final_conj = final_conj.replace(">", "<")
+          print(f"The final conjecture is: {final_conj} < 0")
 
-        file_saved.append(local_save_conj(initial_conj=initial_conj, final_conj=final_conj))
+        file_saved.append(local_save_conj(initial_conj=initial_conj, final_conj=final_conj, sig_val=sig_val))
 
         print(f"Found {101 - counter} conjectures in total!")
 
@@ -318,7 +325,6 @@ if __name__=="__main__":
     conjectures = []
     for file in file_saved:
         conjectures.append(load_json_as_list(file))
-    print(prompt_lemmas(problem, solution, conjectures))
 
     os.environ['PISA_PATH'] = '/home/dc755/Portal-to-ISAbelle/src/main/python'
 
@@ -328,11 +334,20 @@ if __name__=="__main__":
         theory_file='/home/dc755/Isabelle2022/src/HOL/Examples/Interactive.thy',
         port=8000
     )
+    for _ in range(1):
+      print(prompt_lemmas(problem, solution, conjectures))
 
-    with open('response_example_2.txt', 'r') as file:
-        response = file.read()
 
-    result = checker.check(response)
+      with open('response_example_2.txt', 'r') as file:
+          response = file.read()
 
-    print("\n==== Success: %s" % result['success'])
-    print("--- Complete proof:\n%s" % result['theorem_and_proof'])
+      result = checker.check(response)
+
+      print("\n==== Success: %s" % result['success'])
+      print("--- Complete proof:\n%s" % result['theorem_and_proof'])
+
+      if result['success']:
+          print("Proof successful!")
+          break
+      else:
+          print("Proof failed. Trying again...")

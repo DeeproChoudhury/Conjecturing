@@ -1,6 +1,6 @@
 Translate the informal solution into a sketch of the
 formal Isabelle proof. Add `sledgehammer` in the sketch whenever
-possible. `sledgehammer` will be used to call the automated Sledgehammer prover. 
+possible, instead of other tactics. `sledgehammer` will be used to call the automated Sledgehammer prover. 
 Some conjectures with underscores in the variable names will be specified in the prompt, in the form of python dictionaries
 with keys labelled either 'initial conjecture', 'conjecture' or 'final conjecture'.
 Translate them into their formal Isabelle form
@@ -65,7 +65,7 @@ qed
 
 Translate the informal solution into a sketch of the
 formal Isabelle proof. Add `sledgehammer` in the sketch whenever
-possible. `sledgehammer` will be used to call the automated Sledgehammer prover. 
+possible, instead of other tactics. `sledgehammer` will be used to call the automated Sledgehammer prover. 
 Some conjectures with underscores in the variable names will be specified in the prompt, in the form of python dictionaries
 with keys labelled either 'initial conjecture', 'conjecture' or 'final conjecture'.
 Translate them into their formal Isabelle form
@@ -119,7 +119,7 @@ qed
 
 Translate the informal solution into a sketch of the
 formal Isabelle proof. Add `sledgehammer` in the sketch whenever
-possible. `sledgehammer` will be used to call the automated Sledgehammer prover. 
+possible, instead of other tactics. `sledgehammer` will be used to call the automated Sledgehammer prover. 
 Some conjectures with underscores in the variable names will be specified in the prompt, in the form of python dictionaries
 with keys labelled either 'initial conjecture', 'conjecture' or 'final conjecture'.
 Translate them into their formal Isabelle form
@@ -178,6 +178,7 @@ proof -
     ultimately have c2: "(2 * x) * x + 1 - (2 * x) * (sqrt 2) \ge> 0" sledgehammer
     (* Also notice that $2x*x + 1 - 2x * \sqrt{2} = 2x * (x + \frac{1}{2x} - \sqrt{2})$. *)
     have "(2*x) * (x + 1/(2*x) - sqrt 2) = (2 * x) * x + (2 * x) * (1/(2*x)) - (2*x) * sqrt 2"
+      using c0 
       sledgehammer
     also have "... = (2 * x) * x + 1 - (2*x) * sqrt 2" using c0 sledgehammer
     also have "... \ge> 0" using c0 c2 sledgehammer
@@ -186,9 +187,13 @@ proof -
     hence "x + 1/(2*x) - sqrt 2 \ge> 0" using c0
       sledgehammer
     (* Rearranging terms, we see that the required inequality holds. *)
-    then show ?thesis sledgehammer
+    then show ?thesis
+    using c0
+    sledgehammer
   qed
-  then show ?thesis sledgehammer
+  then show ?thesis 
+  using assms c0
+  sledgehammer
 qed
 
 Translate the informal solution into a sketch of the
@@ -211,7 +216,7 @@ The expression can be factored as $(x + 1)^2$. The square of a real number is al
 
 ### Conjectures
 
-[{'conjecture': '11.0*x_1**2 + 4.0 > 0'}, {'conjecture': '2.00000000000000 > 0'}, {'conjecture': '6.0*x_1**2 - 14.0 > 0'}, {'conjecture': '12.0*x_1**2 - 4.0 > 0'}, {'initial_conjecture': '0 > 0', 'final_conjecture': '-1.0*x_1^2 - 2.0 > 0'}]
+[{'final_conjecture': '-2.0*x_1^2 < 0'}]
 
 *)
 

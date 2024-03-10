@@ -1,56 +1,30 @@
-lemma conjecture1:
+lemma sqrt_nonnegative:
   fixes x::real
-  shows "11.0 * x^2 + 4.0 > 0"
+  shows "(x + 1)^2 >= 0"
 proof -
   show ?thesis
   \<proof>
 qed
 
-lemma conjecture2:
-  shows "2.00000000000000 > 0"
-proof -
-  show ?thesis
-  \<proof>
-qed
-
-lemma conjecture3:
+lemma negative_square:
   fixes x::real
-  shows "6.0 * x^2 - 14.0 > 0"
+  assumes "x < 0"
+  shows "x^2 < 0"
 proof -
   show ?thesis
   \<proof>
 qed
 
-lemma conjecture4:
-  fixes x::real
-  shows "12.0 * x^2 - 4.0 > 0"
-proof -
-  show ?thesis
-  \<proof>
-qed
-
-lemma initial_conjecture:
-  shows "0 > 0"
-proof -
-  show ?thesis
-  \<proof>
-qed
-
-lemma final_conjecture:
-  fixes x::real
-  shows "-1.0 * x^2 - 2.0 > 0"
-proof -
-  show ?thesis
-  \<proof>
-qed
-
-theorem main:
+theorem real_number_inequality:
   fixes x::real
   shows "x^2 + 2*x + 1 >= 0"
 proof -
-  have "x^2 + 2*x + 1 = (x+1)^2"
+  have c1 : "(x + 1)^2 = x^2 + 2*x + 1"
     by simp
+  have c2 : "(x + 1)^2 >= 0"
+    using sqrt_nonnegative
+    sledgehammer
   then show ?thesis
-    using conjecture1 conjecture2 conjecture3 conjecture4 initial_conjecture final_conjecture
+    using c1
     sledgehammer
 qed
