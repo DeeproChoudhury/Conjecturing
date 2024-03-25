@@ -194,7 +194,7 @@ Conjectures:
 *)
 """
 
-with open('labelled_prompt.txt', 'r') as file:
+with open('labelled_prompt_2.txt', 'r') as file:
     prompt = file.read()
 
 api_key = os.environ['MISTRAL_API_KEY']
@@ -205,7 +205,7 @@ client = MistralClient(api_key=api_key)
 
 problem="Let $x$ be a real number. Show that $x^2 + 2x + 1 \geq 0$."
 solution="The expression can be factored as $(x + 1)^2$. The square of a real number is always non-negative, so $(x + 1)^2 \geq 0$."
-conjectures="{x^2 > 0}"
+conjectures="{conjecture : x_1^2 >= 0, conjecture: (x + 1)^2 >= 0}"
 
 # problem="Let $x$ be a real number. Prove that $1 \leq \frac{1}{2}(\sin x + 3) \leq 2$."
 # solution="We know by definition that $-1 \leq \sin x \leq 1$, so we start with that and do some rearranging. Adding 3 gives us $2 \leq \sin x + 3 \leq 4$. Dividing by 2 gives us $1 \leq \frac{1}{2}(\sin x + 3) \leq 2."
@@ -240,10 +240,10 @@ def local_save_conj(initial_conj: str, final_conj: str = None, sig_val=0):
     if final_conj is not None:
         data_dictionary = {
             # "initial_conjecture": initial_conj + " > 0",
-            "final_conjecture": final_conj.replace("**", "^") + " > 0" if sig_val >= 0 else final_conj.replace("**", "^") + " < 0",
+            "conjecture": final_conj.replace("**", "^") + " > 0" if sig_val >= 0 else final_conj.replace("**", "^") + " < 0",
         }
     else:
-        data_dictionary = {"conjecture": initial_conj + " > 0"}
+        data_dictionary = {"conjecture": initial_conj.replace("**", "^") + " > 0"}
 
     return write_to_new_json(data_dictionary, directory=WORK_DIR, filename_prefix="conjectures")
 
@@ -257,8 +257,8 @@ domain = Domain(
 if __name__=="__main__":
     
     file_saved = []
-    [x_var, combs, eval_point] = domain.generate_evaluation_domain_discrete(
-        pnt_start=-50, pnt_end=50
+    [x_var, combs, eval_point] = domain.generate_evaluation_domain_continuous(
+        pnt_start=-3, pnt_end=3, n_pnts=100
     )
 
     [y_symbs, num_pars, func_evals, eval_data] = domain.generate_hypothesis_space(
@@ -268,8 +268,8 @@ if __name__=="__main__":
     func_param = FunctionParameterization(num_pars=num_pars, y_symbs=y_symbs)
     print(f"Initial θ vector is: {func_param.θ}")
 
-    no_of_tries = 100
-    counter = 100
+    no_of_tries = 10000
+    counter = no_of_tries
     while counter > 0:
         [initial_conj, initial_loss, flag, sig_val] = find_new_conj(
             num_pars=num_pars,
@@ -290,7 +290,7 @@ if __name__=="__main__":
 
     if flag:
         print("Actual learning needed")
-        [final_conj, final_loss] = sgd_signum_loss(
+        [final_conj, final_loss, not_contains_zero] = sgd_signum_loss(
             y_symbs=y_symbs,
             training_data=eval_data,
             func_param=func_param,
@@ -298,7 +298,7 @@ if __name__=="__main__":
             batch_prct=0.1,
             num_epochs=100,
             θ_differential=100,
-            learn_rate=15.7,
+            learn_rate=10,
             initial_loss=initial_loss,
             loss_type="signum",
             comp_number=1,
@@ -308,6 +308,14 @@ if __name__=="__main__":
         sub_list = zip(y_symbs, func_evals)
         final_conj = final_conj.subs(sub_list)
         final_conj = str(final_conj)
+        greater_than, less_than = [">", "<"]
+        if not not_contains_zero:
+          if sig_val > 0:
+            print(f"The final conjecture is: {final_conj} >= 0")
+          else:
+            final_conj = final_conj.replace(">", "<")
+            print(f"The final conjecture is: {final_conj} <= 0")
+
         if sig_val > 0:
           print(f"The final conjecture is: {final_conj} > 0")
         else:
@@ -316,15 +324,15 @@ if __name__=="__main__":
 
         file_saved.append(local_save_conj(initial_conj=initial_conj, final_conj=final_conj, sig_val=sig_val))
 
-        print(f"Found {101 - counter} conjectures in total!")
+        print(f"Found {no_of_tries - counter + 1} conjectures in total!")
 
     else:
         print("Couldn't find conjecture needing training but saved 100 conjectures!")
 
     # conjectures = load_json_as_list(file_saved)
-    conjectures = []
-    for file in file_saved:
-        conjectures.append(load_json_as_list(file))
+    # conjectures = []
+    # for file in file_saved:
+    #     conjectures.append(load_json_as_list(file))
 
     os.environ['PISA_PATH'] = '/home/dc755/Portal-to-ISAbelle/src/main/python'
 
@@ -334,7 +342,7 @@ if __name__=="__main__":
         theory_file='/home/dc755/Isabelle2022/src/HOL/Examples/Interactive.thy',
         port=8000
     )
-    for _ in range(1):
+    for _ in range(5):
       print(prompt_lemmas(problem, solution, conjectures))
 
 

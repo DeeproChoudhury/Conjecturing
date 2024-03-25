@@ -105,7 +105,8 @@ class Checker(object):
 
     def _run_sledgehammer(self, step, i, tls_name, env):
         # First try heuristics
-        for heuristic in ['by auto', 'by simp', 'by blast', 'by fastforce', 'by force', 'by eval', 'by presburger', 'by sos', 'by arith', 'by linarith', 'by (auto simp: field_simps)']:
+        #TODO : put sos back in 
+        for heuristic in ['by auto', 'by simp', 'by blast', 'by fastforce', 'by force', 'by eval', 'by presburger', 'by arith', 'by linarith', 'by (auto simp: field_simps)']:
             step_ = step.replace('normalhammer', heuristic)
             print("heuristic: ", heuristic)
             obs, reward, done, metadata, error = self._run_step(step_, i, tls_name, env)
