@@ -1,30 +1,28 @@
-lemma sqrt_nonnegative:
+lemma nonneg_square:
   fixes x::real
-  shows "(x + 1)^2 >= 0"
+  shows "x^2 >= 0"
 proof -
   show ?thesis
   \<proof>
 qed
 
-lemma negative_square:
+lemma nonneg_square_plus_one:
   fixes x::real
-  assumes "x < 0"
-  shows "x^2 < 0"
+  shows "(x + 1)^2 >= 0"
 proof -
   show ?thesis
-  \<proof>
+    using nonneg_square
+    sledgehammer
 qed
 
 theorem real_number_inequality:
   fixes x::real
   shows "x^2 + 2*x + 1 >= 0"
 proof -
-  have c1 : "(x + 1)^2 = x^2 + 2*x + 1"
-    by simp
-  have c2 : "(x + 1)^2 >= 0"
-    using sqrt_nonnegative
+  have "(x + 1)^2 >= 0"
+    using nonneg_square_plus_one
     sledgehammer
-  then show ?thesis
-    using c1
+  then show "x^2 + 2*x + 1 >= 0"
+    using nonneg_square_plus_one
     sledgehammer
 qed

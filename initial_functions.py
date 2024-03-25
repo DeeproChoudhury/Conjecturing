@@ -5,4 +5,6 @@ from sympy import Symbol, Eq, sqrt, solve
 
 
 poly_box = [poly(x**2)]
+# poly_box = [poly(x), poly(x**2)]
+# poly_box = [poly((x + 1)**2)]
 # poly_box = [sin]
