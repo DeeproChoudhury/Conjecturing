@@ -1,0 +1,2 @@
+problem="Let $x$ be a real number. Show that $x^2 + 2x + 1 \geq 0$."
+solution="The expression can be factored as $(x + 1)^2$. The square of a real number is always non-negative, so $(x + 1)^2 \geq 0$."

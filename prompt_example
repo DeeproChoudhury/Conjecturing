@@ -217,7 +217,7 @@ The expression can be factored as $(x + 1)^2$. The square of a real number is al
 
 ### Conjectures
 
-{conjecture : x_1^2 >= 0, conjecture: (x + 1)^2 >= 0}
+[{'conjecture': '1.00000000000000 > 0'}, {'conjecture': '8.0*x_1^2 + 1.0 > 0'}, {'conjecture': '3.0*x_1^2 + 7.0 > 0'}, {'conjecture': '-1.0*x_1^2 - 2.0 < 0'}, {'conjecture': 'x_1^2 + 2.0 > 0'}, {'conjecture': '5.0*x_1^2 + 1.0 > 0'}, {'conjecture': '3.0*x_1^2 + 2.0 > 0'}, {'conjecture': '1.0*x_1^2 > 0'}, {'conjecture': 'x_1^2 + 1.0 > 0'}, {'conjecture': '4.0*x_1^2 + 1.0 > 0'}, {'conjecture': '14.0*x_1^2 + 1.0 > 0'}, {'conjecture': '6.0*x_1^2 + 1.0 > 0'}, {'conjecture': '15.0*x_1^2 + 14.0 > 0'}, {'conjecture': '11.0*x_1^2 + 16.0 > 0'}, {'conjecture': '9.0*x_1^2 + 1.0 > 0'}, {'conjecture': '2.0*x_1^2 + 1.0 > 0'}, {'conjecture': '1.0*x_1^2 + 10.0 > 0'}, {'conjecture': '15.0*x_1^2 + 2.0 > 0'}, {'conjecture': '3.0*x_1^2 + 4.0 > 0'}, {'conjecture': '4.0*x_1^2 + 7.0 > 0'}, {'conjecture': 'x_1^2 + 5.0 > 0'}, {'conjecture': '2.0*x_1^2 + 5.0 > 0'}, {'conjecture': '7.0*x_1^2 + 5.0 > 0'}, {'conjecture': '10.0*x_1^2 + 1.0 > 0'}, {'conjecture': '7.0*x_1^2 + 4.0 > 0'}, {'conjecture': '2.0*x_1^2 + 7.0 > 0'}, {'conjecture': '4.0*x_1^2 + 5.0 > 0'}, {'conjecture': '9.0*x_1^2 + 4.0 > 0'}, {'conjecture': '5.0*x_1^2 + 2.0 > 0'}, {'conjecture': '17.0*x_1^2 + 16.0 > 0'}, {'conjecture': '3.0*x_1^2 + 1.0 > 0'}, {'conjecture': '11.0*x_1^2 + 2.0 > 0'}, {'conjecture': '5.0*x_1^2 + 8.0 > 0'}, {'conjecture': '17.0*x_1^2 + 2.0 > 0'}, {'conjecture': 'x_1^2 + 7.0 > 0'}, {'conjecture': '7.0*x_1^2 + 2.0 > 0'}, {'conjecture': '3.0*x_1^2 + 8.0 > 0'}]
 
 *)
 

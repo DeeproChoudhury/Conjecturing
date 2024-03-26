@@ -1,28 +1,307 @@
-lemma nonneg_square:
-  fixes x::real
-  shows "x^2 >= 0"
+lemma one_positive:
+  shows "1.00000000000000 > 0"
 proof -
   show ?thesis
   \<proof>
 qed
 
-lemma nonneg_square_plus_one:
+lemma eight_x_squared_plus_one_positive:
   fixes x::real
-  shows "(x + 1)^2 >= 0"
+  shows "8.0 * x^2 + 1.0 > 0"
 proof -
   show ?thesis
-    using nonneg_square
-    sledgehammer
+  \<proof>
 qed
 
-theorem real_number_inequality:
+lemma three_x_squared_plus_seven_positive:
   fixes x::real
-  shows "x^2 + 2*x + 1 >= 0"
+  shows "3.0 * x^2 + 7.0 > 0"
 proof -
-  have "(x + 1)^2 >= 0"
-    using nonneg_square_plus_one
+  show ?thesis
+  \<proof>
+qed
+
+lemma negative_one_x_squared_minus_two_negative:
+  fixes x::real
+  shows "-1.0 * x^2 - 2.0 < 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma x_squared_plus_two_positive:
+  fixes x::real
+  shows "x^2 + 2.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma five_x_squared_plus_one_positive:
+  fixes x::real
+  shows "5.0 * x^2 + 1.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma three_x_squared_plus_two_positive:
+  fixes x::real
+  shows "3.0 * x^2 + 2.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma one_x_squared_positive:
+  fixes x::real
+  shows "1.0 * x^2 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma x_squared_plus_one_positive:
+  fixes x::real
+  shows "x^2 + 1.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma four_x_squared_plus_one_positive:
+  fixes x::real
+  shows "4.0 * x^2 + 1.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma fourteen_x_squared_plus_one_positive:
+  fixes x::real
+  shows "14.0 * x^2 + 1.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma six_x_squared_plus_one_positive:
+  fixes x::real
+  shows "6.0 * x^2 + 1.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma fifteen_x_squared_plus_fourteen_positive:
+  fixes x::real
+  shows "15.0 * x^2 + 14.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma eleven_x_squared_plus_sixteen_positive:
+  fixes x::real
+  shows "11.0 * x^2 + 16.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma nine_x_squared_plus_one_positive:
+  fixes x::real
+  shows "9.0 * x^2 + 1.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma two_x_squared_plus_one_positive:
+  fixes x::real
+  shows "2.0 * x^2 + 1.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma one_x_squared_plus_ten_positive:
+  fixes x::real
+  shows "1.0 * x^2 + 10.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma fifteen_x_squared_plus_two_positive:
+  fixes x::real
+  shows "15.0 * x^2 + 2.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma three_x_squared_plus_four_positive:
+  fixes x::real
+  shows "3.0 * x^2 + 4.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma four_x_squared_plus_seven_positive:
+  fixes x::real
+  shows "4.0 * x^2 + 7.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma x_squared_plus_five_positive:
+  fixes x::real
+  shows "x^2 + 5.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma two_x_squared_plus_five_positive:
+  fixes x::real
+  shows "2.0 * x^2 + 5.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma seven_x_squared_plus_five_positive:
+  fixes x::real
+  shows "7.0 * x^2 + 5.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma ten_x_squared_plus_one_positive:
+  fixes x::real
+  shows "10.0 * x^2 + 1.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma seven_x_squared_plus_four_positive:
+  fixes x::real
+  shows "7.0 * x^2 + 4.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma two_x_squared_plus_seven_positive:
+  fixes x::real
+  shows "2.0 * x^2 + 7.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma four_x_squared_plus_five_positive:
+  fixes x::real
+  shows "4.0 * x^2 + 5.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma nine_x_squared_plus_four_positive:
+  fixes x::real
+  shows "9.0 * x^2 + 4.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma five_x_squared_plus_two_positive:
+  fixes x::real
+  shows "5.0 * x^2 + 2.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma seventeen_x_squared_plus_sixteen_positive:
+  fixes x::real
+  shows "17.0 * x^2 + 16.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma three_x_squared_plus_one_positive:
+  fixes x::real
+  shows "3.0 * x^2 + 1.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma eleven_x_squared_plus_two_positive:
+  fixes x::real
+  shows "11.0 * x^2 + 2.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma five_x_squared_plus_eight_positive:
+  fixes x::real
+  shows "5.0 * x^2 + 8.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma seventeen_x_squared_plus_two_positive:
+  fixes x::real
+  shows "17.0 * x^2 + 2.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma x_squared_plus_seven_positive:
+  fixes x::real
+  shows "x^2 + 7.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma seven_x_squared_plus_two_positive:
+  fixes x::real
+  shows "7.0 * x^2 + 2.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+lemma three_x_squared_plus_eight_positive:
+  fixes x::real
+  shows "3.0 * x^2 + 8.0 > 0"
+proof -
+  show ?thesis
+  \<proof>
+qed
+
+theorem real\_number\_inequality:
+  fixes x::real
+  shows "x^2 + 2 * x + 1 >= 0"
+proof -
+  define y where "y = x + 1"
+  have "y^2 >= 0"
+    using one\_positive x\_squared\_plus\_two\_positive y\_def
     sledgehammer
-  then show "x^2 + 2*x + 1 >= 0"
-    using nonneg_square_plus_one
+  then show ?thesis
+    using y\_def
     sledgehammer
 qed

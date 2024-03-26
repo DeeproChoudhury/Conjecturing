@@ -15,6 +15,8 @@ from conjecture_generation.src.func_parameterization import FunctionParameteriza
 from conjecture_generation.src.functions import exponential_box
 from conjecture_generation.src.conj_gen import find_new_conj, sgd_signum_loss, save_conj
 from initial_functions import poly_box
+
+from typing import List
 import dsp_functions
 
 prompt = """Translate the informal solution into a sketch of the
@@ -210,7 +212,30 @@ conjectures="{conjecture : x_1^2 >= 0, conjecture: (x + 1)^2 >= 0}"
 # problem="Let $x$ be a real number. Prove that $1 \leq \frac{1}{2}(\sin x + 3) \leq 2$."
 # solution="We know by definition that $-1 \leq \sin x \leq 1$, so we start with that and do some rearranging. Adding 3 gives us $2 \leq \sin x + 3 \leq 4$. Dividing by 2 gives us $1 \leq \frac{1}{2}(\sin x + 3) \leq 2."
 
-def prompt_lemmas(problem: str, solution: str, conjectures: str, functions=None) -> str:
+def prompt_lemmas_sequentially(problem: str, solution: str, conjectures: list[str]) -> str:
+    print("conjectures: ", conjectures)
+
+    with open("prompt_example", "w") as file:
+       for i, conj in enumerate(conjectures):
+          file.write(load_template(prompt).render(problem=problem, solution=solution, conjectures=conj))
+          completion = client.chat(
+                model=model,
+                messages=[
+                    # ChatMessage(role="system", content="You are a helpful assistant."),
+                    ChatMessage(role="user", content=load_template(prompt).render(
+                        problem=problem, 
+                        solution=solution, 
+                        conjectures=conj
+                        )
+                    ),
+                ]
+          )
+          with open("response_example_2.txt", "w") as file:
+            file.write(completion.choices[0].message.content)
+    return completion.choices[0].message.content
+
+
+def prompt_lemmas(problem: str, solution: str, conjectures: list[str], functions=None) -> str:
     if functions is not None:
         conjectures = conjectures + functions
 
@@ -257,6 +282,7 @@ domain = Domain(
 if __name__=="__main__":
     
     file_saved = []
+    conjectures = []
     [x_var, combs, eval_point] = domain.generate_evaluation_domain_continuous(
         pnt_start=-3, pnt_end=3, n_pnts=100
     )
@@ -268,7 +294,7 @@ if __name__=="__main__":
     func_param = FunctionParameterization(num_pars=num_pars, y_symbs=y_symbs)
     print(f"Initial θ vector is: {func_param.θ}")
 
-    no_of_tries = 10000
+    no_of_tries = 100
     counter = no_of_tries
     while counter > 0:
         [initial_conj, initial_loss, flag, sig_val] = find_new_conj(
@@ -282,57 +308,59 @@ if __name__=="__main__":
         )
         initial_conj = str(initial_conj)
         if not flag:
-            file_saved.append(local_save_conj(initial_conj=initial_conj))
+            if initial_conj not in conjectures:
+              conjectures.append(initial_conj)
+              file_saved.append(local_save_conj(initial_conj=initial_conj))
             print("this is the file saved", file_saved)
             counter -= 1
-        else:
-            break
 
-    if flag:
-        print("Actual learning needed")
-        [final_conj, final_loss, not_contains_zero] = sgd_signum_loss(
-            y_symbs=y_symbs,
-            training_data=eval_data,
-            func_param=func_param,
-            sig_val=sig_val,
-            batch_prct=0.1,
-            num_epochs=100,
-            θ_differential=100,
-            learn_rate=10,
-            initial_loss=initial_loss,
-            loss_type="signum",
-            comp_number=1,
-            num_pars=num_pars,
-        )
+        if flag:
+            # print("Actual learning needed")
+            [final_conj, final_loss, not_contains_zero] = sgd_signum_loss(
+                y_symbs=y_symbs,
+                training_data=eval_data,
+                func_param=func_param,
+                sig_val=sig_val,
+                batch_prct=0.1,
+                num_epochs=100,
+                θ_differential=100,
+                learn_rate=10,
+                initial_loss=initial_loss,
+                loss_type="signum",
+                comp_number=1,
+                num_pars=num_pars,
+            )
 
-        sub_list = zip(y_symbs, func_evals)
-        final_conj = final_conj.subs(sub_list)
-        final_conj = str(final_conj)
-        greater_than, less_than = [">", "<"]
-        if not not_contains_zero:
-          if sig_val > 0:
-            print(f"The final conjecture is: {final_conj} >= 0")
-          else:
-            final_conj = final_conj.replace(">", "<")
-            print(f"The final conjecture is: {final_conj} <= 0")
+            sub_list = zip(y_symbs, func_evals)
+            final_conj = final_conj.subs(sub_list)
+            final_conj = str(final_conj)
+            greater_than, less_than = [">", "<"]
+            if not not_contains_zero:
+              if sig_val > 0:
+                print(f"The final conjecture is: {final_conj} >= 0")
+              else:
+                final_conj = final_conj.replace(">", "<")
+                print(f"The final conjecture is: {final_conj} <= 0")
 
-        if sig_val > 0:
-          print(f"The final conjecture is: {final_conj} > 0")
-        else:
-          final_conj = final_conj.replace(">", "<")
-          print(f"The final conjecture is: {final_conj} < 0")
+            if sig_val > 0:
+              print(f"The final conjecture is: {final_conj} > 0")
+            else:
+              final_conj = final_conj.replace(">", "<")
+              print(f"The final conjecture is: {final_conj} < 0")
 
-        file_saved.append(local_save_conj(initial_conj=initial_conj, final_conj=final_conj, sig_val=sig_val))
+            if final_conj not in conjectures:
+              conjectures.append(final_conj)
+              file_saved.append(local_save_conj(initial_conj=initial_conj, final_conj=final_conj, sig_val=sig_val))
 
-        print(f"Found {no_of_tries - counter + 1} conjectures in total!")
+            print(f"Found {no_of_tries - counter + 1} conjectures in total!")
 
-    else:
-        print("Couldn't find conjecture needing training but saved 100 conjectures!")
+        # else:
+        #     print("Couldn't find conjecture needing training but saved 100 conjectures!")
 
     # conjectures = load_json_as_list(file_saved)
-    # conjectures = []
-    # for file in file_saved:
-    #     conjectures.append(load_json_as_list(file))
+    saved_conjectures = []
+    for file in file_saved:
+        saved_conjectures.append(load_json_as_list(file))
 
     os.environ['PISA_PATH'] = '/home/dc755/Portal-to-ISAbelle/src/main/python'
 
@@ -343,7 +371,7 @@ if __name__=="__main__":
         port=8000
     )
     for _ in range(5):
-      print(prompt_lemmas(problem, solution, conjectures))
+      print(prompt_lemmas(problem, solution, saved_conjectures))
 
 
       with open('response_example_2.txt', 'r') as file:

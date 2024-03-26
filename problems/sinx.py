@@ -1,0 +1,2 @@
+problem="Let $x$ be a real number. Prove that $1 \leq \frac{1}{2}(\sin x + 3) \leq 2$."
+solution="We know by definition that $-1 \leq \sin x \leq 1$, so we start with that and do some rearranging. Adding 3 gives us $2 \leq \sin x + 3 \leq 4$. Dividing by 2 gives us $1 \leq \frac{1}{2}(\sin x + 3) \leq 2."
