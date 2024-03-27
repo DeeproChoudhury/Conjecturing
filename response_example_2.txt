@@ -21,7 +21,7 @@ proof -
   \<proof>
 qed
 
-lemma negative_one_x_squared_minus_two_negative:
+lemma negative_x_squared_minus_two_negative:
   fixes x::real
   shows "-1.0 * x^2 - 2.0 < 0"
 proof -
@@ -53,7 +53,7 @@ proof -
   \<proof>
 qed
 
-lemma one_x_squared_positive:
+lemma x_squared_positive:
   fixes x::real
   shows "1.0 * x^2 > 0"
 proof -
@@ -125,7 +125,7 @@ proof -
   \<proof>
 qed
 
-lemma one_x_squared_plus_ten_positive:
+lemma x_squared_plus_ten_positive:
   fixes x::real
   shows "1.0 * x^2 + 10.0 > 0"
 proof -
@@ -297,11 +297,10 @@ theorem real\_number\_inequality:
   fixes x::real
   shows "x^2 + 2 * x + 1 >= 0"
 proof -
-  define y where "y = x + 1"
-  have "y^2 >= 0"
-    using one\_positive x\_squared\_plus\_two\_positive y\_def
+  have "x^2 + 2 * x + 1 = (x + 1)^2"
+    using one\_positive eight\_x\_squared\_plus\_one\_positive three\_x\_squared\_plus\_seven\_positive negative\_x\_squared\_minus\_two\_negative x\_squared\_plus\_two\_positive five\_x\_squared\_plus\_one\_positive three\_x\_squared\_plus\_two\_positive x\_squared\_positive x\_squared\_plus\_one\_positive four\_x\_squared\_plus\_one\_positive fourteen\_x\_squared\_plus\_one\_positive six\_x\_squared\_plus\_one\_positive fifteen\_x\_squared\_plus\_fourteen\_positive eleven\_x\_squared\_plus\_sixteen\_positive nine\_x\_squared\_plus\_one\_positive two\_x\_squared\_plus\_one\_positive x\_squared\_plus\_ten\_positive fifteen\_x\_squared\_plus\_two\_positive three\_x\_squared\_plus\_four\_positive four\_x\_squared\_plus\_seven\_positive x\_squared\_plus\_five\_positive two\_x\_squared\_plus\_five\_positive seven\_x\_squared\_plus\_five\_positive ten\_x\_squared\_plus\_one\_positive seven\_x\_squared\_plus\_four\_positive two\_x\_squared\_plus\_seven\_positive four\_x\_squared\_plus\_five\_positive nine\_x\_squared\_plus\_four\_positive five\_x\_squared\_plus\_two\_positive seventeen\_x\_squared\_plus\_sixteen\_positive three\_x\_squared\_plus\_one\_positive eleven\_x\_squared\_plus\_two\_positive five\_x\_squared\_plus\_eight\_positive seventeen\_x\_squared\_plus\_two\_positive x\_squared\_plus\_seven\_positive seven\_x\_squared\_plus\_two\_positive three\_x\_squared\_plus\_eight\_positive
     sledgehammer
   then show ?thesis
-    using y\_def
+    using one\_positive eight\_x\_squared\_plus\_one\_positive three\_x\_squared\_plus\_seven\_positive negative\_x\_squared\_minus\_two\_negative x\_squared\_plus\_two\_positive five\_x\_squared\_plus\_one\_positive three\_x\_squared\_plus\_two\_positive x\_squared\_positive x\_squared\_plus\_one\_positive four\_x\_squared\_plus\_one\_positive fourteen\_x\_squared\_plus\_one\_positive six\_x\_squared\_plus\_one\_positive fifteen\_x\_squared\_plus\_fourteen\_positive eleven\_x\_squared\_plus\_sixteen\_positive nine\_x\_squared\_plus\_one\_positive two\_x\_squared\_plus\_one\_positive x\_squared\_plus\_ten\_positive fifteen\_x\_squared\_plus\_two\_positive three\_x\_squared\_plus\_four\_positive four\_x\_squared\_plus\_seven\_positive x\_squared\_plus\_five\_positive two\_x\_squared\_plus\_five\_positive seven\_x\_squared\_plus\_five\_positive ten\_x\_squared\_plus\_one\_positive seven\_x\_squared\_plus\_four\_positive two\_x\_squared\_plus\_seven\_positive four\_x\_squared\_plus\_five\_positive nine\_x\_squared\_plus\_four\_positive five\_x\_squared\_plus\_two\_positive seventeen\_x\_squared\_plus\_sixteen\_positive three\_x\_squared\_plus\_one\_positive eleven\_x\_squared\_plus\_two\_positive five\_x\_squared\_plus\_eight\_positive seventeen\_x\_squared\_plus\_two\_positive x\_squared\_plus\_seven\_positive seven\_x\_squared\_plus\_two\_positive three\_x\_squared\_plus\_eight\_positive
     sledgehammer
 qed
